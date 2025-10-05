@@ -1,1 +1,10 @@
 project_id = "nskuyddwxoezecrlxsqw"
+
+[functions.generate-with-reasoning]
+verify_jwt = false
+
+[functions.store-knowledge]
+verify_jwt = false
+
+[functions.learn-from-feedback]
+verify_jwt = false
