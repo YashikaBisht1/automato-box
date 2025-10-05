@@ -9,6 +9,7 @@ import Branding from "./pages/Branding";
 import Content from "./pages/Content";
 import Outreach from "./pages/Outreach";
 import Orchestrator from "./pages/Orchestrator";
+import KnowledgeBase from "./pages/KnowledgeBase";
 import NotFound from "./pages/NotFound";
 import { Navbar } from "./components/Navbar";
 
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/orchestrator" element={<Orchestrator />} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/market-analyst" element={<MarketAnalyst />} />
           <Route path="/branding" element={<Branding />} />
           <Route path="/content" element={<Content />} />

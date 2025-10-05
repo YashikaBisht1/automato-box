@@ -14,13 +14,168 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_decisions: {
+        Row: {
+          agent_type: string
+          alternatives_considered: Json | null
+          confidence_score: number | null
+          created_at: string | null
+          decision_context: string
+          id: string
+          reasoning_chain: Json
+          sources_used: Json | null
+          user_feedback: string | null
+        }
+        Insert: {
+          agent_type: string
+          alternatives_considered?: Json | null
+          confidence_score?: number | null
+          created_at?: string | null
+          decision_context: string
+          id?: string
+          reasoning_chain: Json
+          sources_used?: Json | null
+          user_feedback?: string | null
+        }
+        Update: {
+          agent_type?: string
+          alternatives_considered?: Json | null
+          confidence_score?: number | null
+          created_at?: string | null
+          decision_context?: string
+          id?: string
+          reasoning_chain?: Json
+          sources_used?: Json | null
+          user_feedback?: string | null
+        }
+        Relationships: []
+      }
+      knowledge_entries: {
+        Row: {
+          category: string | null
+          confidence_score: number | null
+          content: string
+          created_at: string | null
+          entity_name: string | null
+          id: string
+          is_outdated: boolean | null
+          last_validated_at: string | null
+          metadata: Json | null
+          source_type: string
+          source_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          confidence_score?: number | null
+          content: string
+          created_at?: string | null
+          entity_name?: string | null
+          id?: string
+          is_outdated?: boolean | null
+          last_validated_at?: string | null
+          metadata?: Json | null
+          source_type: string
+          source_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          confidence_score?: number | null
+          content?: string
+          created_at?: string | null
+          entity_name?: string | null
+          id?: string
+          is_outdated?: boolean | null
+          last_validated_at?: string | null
+          metadata?: Json | null
+          source_type?: string
+          source_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      knowledge_relationships: {
+        Row: {
+          created_at: string | null
+          id: string
+          relationship_type: string
+          source_id: string | null
+          strength: number | null
+          target_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          relationship_type: string
+          source_id?: string | null
+          strength?: number | null
+          target_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          relationship_type?: string
+          source_id?: string | null
+          strength?: number | null
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_relationships_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "knowledge_relationships_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "knowledge_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          examples: Json | null
+          id: string
+          preference_type: string
+          preference_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          examples?: Json | null
+          id?: string
+          preference_type: string
+          preference_value: Json
+          updated_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          examples?: Json | null
+          id?: string
+          preference_type?: string
+          preference_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      mark_outdated_knowledge: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
