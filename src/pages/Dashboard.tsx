@@ -1,4 +1,4 @@
-import { Search, Palette, FileText, Mail } from 'lucide-react';
+import { Search, Palette, FileText, Mail, Brain } from 'lucide-react';
 import { AgentCard } from '@/components/AgentCard';
 import { RecentActivity } from '@/components/RecentActivity';
 import { useEffect, useState } from 'react';
@@ -13,6 +13,12 @@ import {
 } from '@/components/ui/dialog';
 
 const agents = [
+  {
+    icon: Brain,
+    title: 'AI Orchestrator',
+    description: 'Smart router that coordinates multiple agents',
+    route: '/orchestrator',
+  },
   {
     icon: Search,
     title: 'Market Analyst',
