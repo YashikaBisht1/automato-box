@@ -15,9 +15,10 @@ interface AgentInterfaceProps {
   agentType: string;
   agentName: string;
   placeholder: string;
+  onOutputGenerated?: (output: string) => void;
 }
 
-export default function AgentInterface({ agentType, agentName, placeholder }: AgentInterfaceProps) {
+export default function AgentInterface({ agentType, agentName, placeholder, onOutputGenerated }: AgentInterfaceProps) {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,6 +60,11 @@ export default function AgentInterface({ agentType, agentName, placeholder }: Ag
       setRagContext(data.rag_context);
       setToolUsage(data.tool_usage || []);
       setMemoryStats(data.memory);
+      
+      // Trigger logo generation callback for branding agent
+      if (onOutputGenerated && data.output) {
+        onOutputGenerated(data.output);
+      }
       
       toast.success('Generated successfully');
     } catch (error: any) {
