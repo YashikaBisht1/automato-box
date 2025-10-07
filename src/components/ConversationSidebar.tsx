@@ -140,24 +140,30 @@ export default function ConversationSidebar({
                       {new Date(conv.updated_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-shrink-0">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-7 w-7"
                       onClick={(e) => {
                         e.stopPropagation();
                         downloadConversation(conv);
                       }}
+                      title="Download conversation"
                     >
                       <Download className="w-3 h-3" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteConversation(conv.id);
+                        if (confirm('Delete this conversation?')) {
+                          deleteConversation(conv.id);
+                        }
                       }}
+                      title="Delete conversation"
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>

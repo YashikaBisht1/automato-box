@@ -7,8 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeIntent, decomposeTask, TaskAnalysis, AgentType } from '@/lib/orchestrator';
-import { Brain, Zap, Target, Clock, TrendingUp } from 'lucide-react';
+import { Brain, Zap, Target, Clock, TrendingUp, Download, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
+import ReactMarkdown from 'react-markdown';
+
+interface AgentResult {
+  agent: AgentType;
+  output: string;
+  timestamp: string;
+  conversationId?: string;
+}
 
 export default function Orchestrator() {
   const { groqApiKey, deductCredit, addActivity } = useAppStore();
@@ -20,6 +29,7 @@ export default function Orchestrator() {
   const [subtasks, setSubtasks] = useState<string[]>([]);
   const [currentAgent, setCurrentAgent] = useState<AgentType | null>(null);
   const [progress, setProgress] = useState(0);
+  const [agentResults, setAgentResults] = useState<AgentResult[]>([]);
 
   const handleAnalyze = async () => {
     if (!groqApiKey) {
@@ -95,25 +105,57 @@ export default function Orchestrator() {
 
     setIsExecuting(true);
     setProgress(0);
+    setAgentResults([]);
 
     try {
       const totalAgents = analysis.recommendedAgents.length;
+      const results: AgentResult[] = [];
       
       for (let i = 0; i < totalAgents; i++) {
         const agent = analysis.recommendedAgents[i];
         setCurrentAgent(agent);
         setProgress(((i + 1) / totalAgents) * 100);
         
-        // Simulate agent execution (replace with actual agent calls)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        addActivity({
-          agent: agent,
-          title: `Executed ${agent}`,
-          status: 'completed',
-        });
+        try {
+          // Call the actual RAG agent
+          const { data, error } = await supabase.functions.invoke('rag-agent', {
+            body: {
+              agent_type: agent,
+              prompt: subtasks[i] || input,
+              enabled_tools: ['calculator', 'web_search', 'data_analyzer']
+            }
+          });
+
+          if (error) throw error;
+
+          results.push({
+            agent,
+            output: data.output,
+            timestamp: new Date().toISOString(),
+            conversationId: data.conversation_id
+          });
+
+          addActivity({
+            agent: agent,
+            title: `Completed ${agentLabels[agent]}`,
+            status: 'completed',
+          });
+        } catch (error) {
+          console.error(`Error executing ${agent}:`, error);
+          results.push({
+            agent,
+            output: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            timestamp: new Date().toISOString()
+          });
+          addActivity({
+            agent: agent,
+            title: `Failed ${agentLabels[agent]}`,
+            status: 'failed',
+          });
+        }
       }
 
+      setAgentResults(results);
       toast({
         title: 'Workflow Complete',
         description: 'All agents have finished processing your request.',
@@ -127,8 +169,30 @@ export default function Orchestrator() {
     } finally {
       setIsExecuting(false);
       setCurrentAgent(null);
-      setProgress(0);
     }
+  };
+
+  const downloadAllResults = () => {
+    const content = JSON.stringify({
+      task: input,
+      analysis: analysis,
+      results: agentResults,
+      timestamp: new Date().toISOString()
+    }, null, 2);
+
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orchestrator-results-${new Date().toISOString()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({
+      title: 'Results Downloaded',
+      description: 'All agent results have been downloaded.',
+    });
   };
 
   const getComplexityColor = (complexity: string) => {
@@ -296,6 +360,43 @@ export default function Orchestrator() {
                   )}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {agentResults.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Agent Results
+                </CardTitle>
+                <Button onClick={downloadAllResults} variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Download All
+                </Button>
+              </div>
+              <CardDescription>
+                Results from {agentResults.length} agent{agentResults.length > 1 ? 's' : ''}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {agentResults.map((result, idx) => (
+                <Card key={idx} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary">{agentLabels[result.agent]}</Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(result.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <ReactMarkdown>{result.output}</ReactMarkdown>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </CardContent>
           </Card>
         )}
