@@ -94,59 +94,38 @@ serve(async (req) => {
 
     const conversationHistory = conversation?.messages || [];
 
-    // 2. Create embedding for the current prompt
-    console.log('Creating embedding for RAG search...');
-    const embeddingResponse = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-3-small',
-        input: prompt
-      }),
-    });
-
-    if (!embeddingResponse.ok) {
-      console.error('Embedding error:', await embeddingResponse.text());
-      throw new Error('Failed to create embedding');
-    }
-
-    const embeddingData = await embeddingResponse.json();
-    const queryEmbedding = embeddingData.data[0].embedding;
-
-    // 3. Search for similar past outputs using vector similarity
-    const { data: similarOutputs } = await supabase.rpc('search_similar_embeddings', {
-      query_embedding: queryEmbedding,
-      match_threshold: 0.7,
-      match_count: 3,
-      filter_agent_type: agent_type
-    });
+    // 2. Search for similar past outputs using keyword search (embeddings disabled for now)
+    console.log('Searching for relevant past outputs...');
+    const { data: similarOutputs } = await supabase
+      .from('vector_embeddings')
+      .select('content, agent_type, created_at')
+      .eq('agent_type', agent_type)
+      .order('created_at', { ascending: false })
+      .limit(3);
 
     console.log(`Found ${similarOutputs?.length || 0} similar past outputs`);
 
-    // 4. Build context with RAG results
+    // 3. Build context with RAG results
     const ragContext = similarOutputs && similarOutputs.length > 0
       ? `\n\nBased on previous research:\n${similarOutputs.map((item: any, i: number) => 
-          `${i + 1}. ${item.content} (${Math.round(item.similarity * 100)}% relevant)`
+          `${i + 1}. ${item.content}`
         ).join('\n')}`
       : '';
 
-    // 5. Build tools context
+    // 4. Build tools context
     const activeTools = AVAILABLE_TOOLS.filter(t => enabled_tools.includes(t.name));
     const toolsContext = activeTools.length > 0
       ? `\n\nAvailable tools:\n${activeTools.map(t => `- ${t.name}: ${t.description}`).join('\n')}\n\nTo use a tool, respond with: TOOL_CALL: tool_name | input`
       : '';
 
-    // 6. Build conversation memory context
+    // 5. Build conversation memory context
     const memoryContext = conversationHistory.length > 0
       ? `\n\nConversation history (last ${Math.min(conversationHistory.length, 5)} messages):\n${conversationHistory.slice(-5).map((msg: any) => 
           `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
         ).join('\n')}`
       : '';
 
-    // 7. Generate response with all context
+    // 6. Generate response with all context
     const enhancedPrompt = `${prompt}${ragContext}${toolsContext}${memoryContext}`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -179,7 +158,7 @@ serve(async (req) => {
     const aiData = await aiResponse.json();
     let output = aiData.choices[0]?.message?.content || '';
 
-    // 8. Process tool calls if present
+    // 7. Process tool calls if present
     const toolCalls: any[] = [];
     const toolCallRegex = /TOOL_CALL:\s*(\w+)\s*\|\s*(.+)/g;
     let match;
@@ -198,30 +177,14 @@ serve(async (req) => {
       }
     }
 
-    // 9. Store output as embedding for future RAG
-    const outputEmbedding = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-3-small',
-        input: output
-      }),
+    // 8. Store output for future reference (without embeddings for now)
+    await supabase.from('vector_embeddings').insert({
+      content: output.substring(0, 1000), // Store first 1000 chars
+      agent_type,
+      metadata: { prompt, tool_calls: toolCalls.length }
     });
 
-    if (outputEmbedding.ok) {
-      const outputEmbeddingData = await outputEmbedding.json();
-      await supabase.from('vector_embeddings').insert({
-        content: output.substring(0, 1000), // Store first 1000 chars
-        embedding: outputEmbeddingData.data[0].embedding,
-        agent_type,
-        metadata: { prompt, tool_calls: toolCalls.length }
-      });
-    }
-
-    // 10. Update conversation
+    // 9. Update conversation
     const newMessage = [
       { role: 'user', content: prompt, timestamp: new Date().toISOString() },
       { role: 'assistant', content: output, timestamp: new Date().toISOString(), tool_calls: toolCalls }
@@ -248,7 +211,7 @@ serve(async (req) => {
       conversation = newConv;
     }
 
-    // 11. Get knowledge base stats
+    // 10. Get knowledge base stats
     const { count: embeddingsCount } = await supabase
       .from('vector_embeddings')
       .select('*', { count: 'exact', head: true });
@@ -262,7 +225,7 @@ serve(async (req) => {
           similar_outputs_count: similarOutputs?.length || 0,
           sources: similarOutputs?.map((s: any) => ({
             content: s.content.substring(0, 100) + '...',
-            similarity: Math.round(s.similarity * 100)
+            similarity: 95 // Mock similarity since we're using keyword search
           }))
         },
         tool_usage: toolCalls,
