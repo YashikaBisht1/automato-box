@@ -67,35 +67,52 @@ export default function Dashboard() {
     <>
       <div className="min-h-screen pb-12">
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-16 md:py-24">
-          <div className="absolute inset-0 -z-10 gradient-glass" />
+        <section className="relative overflow-hidden py-20 md:py-28">
+          <div className="absolute inset-0 -z-10 gradient-hero" />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.1),transparent_50%)]" />
           
           <div className="container">
             <div className="mx-auto max-w-3xl text-center animate-fade-in">
-              <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                <span className="text-sm font-medium text-primary">AI-Powered Startup Tools</span>
+              </div>
+              
+              <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl">
                 Welcome! What would you like to{' '}
-                <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-pulse">
                   accomplish today?
                 </span>
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Choose an AI agent below to automate your business tasks
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Choose an AI agent below to automate your business tasks and accelerate growth
               </p>
             </div>
           </div>
         </section>
 
         {/* Agent Cards Grid */}
-        <section className="container">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 mb-12 animate-slide-up">
-            {agents.map((agent) => (
-              <AgentCard key={agent.title} {...agent} />
+        <section className="container -mt-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mb-16 animate-slide-up">
+            {agents.map((agent, idx) => (
+              <div 
+                key={agent.title}
+                className="animate-fade-in"
+                style={{ animationDelay: `${idx * 0.1}s` }}
+              >
+                <AgentCard {...agent} />
+              </div>
             ))}
           </div>
 
           {/* Recent Activity */}
-          <div className="mx-auto max-w-4xl animate-fade-in">
-            <h2 className="mb-6 text-2xl font-bold">Recent Activity</h2>
+          <div className="mx-auto max-w-5xl animate-fade-in">
+            <h2 className="mb-8 text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+              Recent Activity
+            </h2>
             <RecentActivity />
           </div>
         </section>
