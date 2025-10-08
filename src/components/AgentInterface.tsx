@@ -32,6 +32,19 @@ export default function AgentInterface({ agentType, agentName, placeholder, onOu
     data_analyzer: true
   });
 
+  // Reset conversation when switching conversations or creating new one
+  const handleConversationChange = (newConvId: string | undefined) => {
+    setConversationId(newConvId);
+    if (newConvId === undefined) {
+      // New conversation - clear everything
+      setInput('');
+      setOutput('');
+      setRagContext(null);
+      setToolUsage([]);
+      setMemoryStats(null);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!input.trim()) {
       toast.error('Please enter a prompt');
@@ -103,10 +116,10 @@ export default function AgentInterface({ agentType, agentName, placeholder, onOu
       <ConversationSidebar
         agentType={agentType}
         currentConversationId={conversationId}
-        onSelectConversation={setConversationId}
+        onSelectConversation={handleConversationChange}
       />
 
-      <div className="max-w-4xl mx-auto ml-96 space-y-6">
+      <div className="max-w-4xl mx-auto ml-96 space-y-6 animate-fade-in">
         {/* Header with stats */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">{agentName}</h1>
@@ -126,8 +139,11 @@ export default function AgentInterface({ agentType, agentName, placeholder, onOu
         </div>
 
         {/* Tool configuration */}
-        <Card className="p-4">
-          <h3 className="text-sm font-semibold mb-3">Available Tools</h3>
+        <Card className="p-4 glass-card transition-all duration-300 hover:shadow-lg">
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Wrench className="w-4 h-4 text-primary" />
+            Available Tools
+          </h3>
           <div className="flex gap-6">
             <div className="flex items-center space-x-2">
               <Switch
@@ -157,21 +173,23 @@ export default function AgentInterface({ agentType, agentName, placeholder, onOu
         </Card>
 
         {/* Input */}
-        <Card className="p-6">
+        <Card className="p-6 glass-card transition-all duration-300 hover:shadow-xl">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={placeholder}
-            className="min-h-[150px] mb-4"
+            className="min-h-[150px] mb-4 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
           />
-          <Button onClick={handleGenerate} disabled={loading} className="w-full">
+          <Button onClick={handleGenerate} disabled={loading} className="w-full group">
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Generating...
               </>
             ) : (
-              'Generate'
+              <>
+                <span className="transition-transform group-hover:scale-105">Generate</span>
+              </>
             )}
           </Button>
         </Card>

@@ -7,10 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeIntent, decomposeTask, TaskAnalysis, AgentType } from '@/lib/orchestrator';
-import { Brain, Zap, Target, Clock, TrendingUp, Download, CheckCircle } from 'lucide-react';
+import { Brain, Zap, Target, Clock, TrendingUp, Download, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
+import { useNavigate } from 'react-router-dom';
 
 interface AgentResult {
   agent: AgentType;
@@ -20,6 +21,7 @@ interface AgentResult {
 }
 
 export default function Orchestrator() {
+  const navigate = useNavigate();
   const { groqApiKey, deductCredit, addActivity } = useAppStore();
   const { toast } = useToast();
   const [input, setInput] = useState('');
@@ -213,10 +215,19 @@ export default function Orchestrator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 pt-20 pb-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <Button
+        variant="ghost"
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 z-20 group"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+        Back to Dashboard
+      </Button>
+
+      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <Brain className="w-12 h-12 text-primary" />
+            <Brain className="w-12 h-12 text-primary animate-pulse" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               AI Orchestrator
             </h1>
@@ -226,7 +237,7 @@ export default function Orchestrator() {
           </p>
         </div>
 
-        <Card>
+        <Card className="glass-card transition-all duration-300 hover:shadow-xl">
           <CardHeader>
             <CardTitle>What do you need help with?</CardTitle>
             <CardDescription>
@@ -239,12 +250,12 @@ export default function Orchestrator() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={4}
-              className="resize-none"
+              className="resize-none transition-all duration-200 focus:ring-2 focus:ring-primary/20"
             />
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing || !input.trim()}
-              className="w-full"
+              className="w-full group"
             >
               {isAnalyzing ? (
                 <>
@@ -253,7 +264,7 @@ export default function Orchestrator() {
                 </>
               ) : (
                 <>
-                  <Zap className="w-4 h-4 mr-2" />
+                  <Zap className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
                   Analyze Task
                 </>
               )}
