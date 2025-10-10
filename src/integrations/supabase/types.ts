@@ -25,6 +25,7 @@ export type Database = {
           reasoning_chain: Json
           sources_used: Json | null
           user_feedback: string | null
+          user_id: string | null
         }
         Insert: {
           agent_type: string
@@ -36,6 +37,7 @@ export type Database = {
           reasoning_chain: Json
           sources_used?: Json | null
           user_feedback?: string | null
+          user_id?: string | null
         }
         Update: {
           agent_type?: string
@@ -47,6 +49,7 @@ export type Database = {
           reasoning_chain?: Json
           sources_used?: Json | null
           user_feedback?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -59,6 +62,7 @@ export type Database = {
           metadata: Json | null
           title: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           agent_type: string
@@ -68,6 +72,7 @@ export type Database = {
           metadata?: Json | null
           title?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           agent_type?: string
@@ -77,6 +82,7 @@ export type Database = {
           metadata?: Json | null
           title?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -94,6 +100,7 @@ export type Database = {
           source_type: string
           source_url: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           category?: string | null
@@ -108,6 +115,7 @@ export type Database = {
           source_type: string
           source_url?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           category?: string | null
@@ -122,6 +130,7 @@ export type Database = {
           source_type?: string
           source_url?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -133,6 +142,7 @@ export type Database = {
           source_id: string | null
           strength: number | null
           target_id: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -141,6 +151,7 @@ export type Database = {
           source_id?: string | null
           strength?: number | null
           target_id?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -149,6 +160,7 @@ export type Database = {
           source_id?: string | null
           strength?: number | null
           target_id?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -167,6 +179,33 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           confidence_score: number | null
@@ -176,6 +215,7 @@ export type Database = {
           preference_type: string
           preference_value: Json
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           confidence_score?: number | null
@@ -185,6 +225,7 @@ export type Database = {
           preference_type: string
           preference_value: Json
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           confidence_score?: number | null
@@ -194,6 +235,7 @@ export type Database = {
           preference_type?: string
           preference_value?: Json
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -207,6 +249,7 @@ export type Database = {
           entity_name: string | null
           id: string
           metadata: Json | null
+          user_id: string | null
         }
         Insert: {
           agent_type: string
@@ -217,6 +260,7 @@ export type Database = {
           entity_name?: string | null
           id?: string
           metadata?: Json | null
+          user_id?: string | null
         }
         Update: {
           agent_type?: string
@@ -227,6 +271,7 @@ export type Database = {
           entity_name?: string | null
           id?: string
           metadata?: Json | null
+          user_id?: string | null
         }
         Relationships: []
       }
