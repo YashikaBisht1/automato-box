@@ -2,6 +2,9 @@
 
 A sophisticated AI-powered platform featuring specialized agents for market analysis, branding, content creation, and outreach. Built with advanced RAG (Retrieval-Augmented Generation), conversation memory, and intelligent orchestration.
 
+# Live preview
+https://automato-box.lovable.app/
+
 ## 🚀 Features
 
 ### Specialized AI Agents
@@ -51,42 +54,6 @@ A sophisticated AI-powered platform featuring specialized agents for market anal
 - Multi-agent collaboration
 - Structured output generation
 - Feedback learning loops
-
-## Project info
-
-**URL**: https://lovable.dev/projects/b6587642-912e-4a3b-80d0-9abc83b00034
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/b6587642-912e-4a3b-80d0-9abc83b00034) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Navigate to project directory
-cd <YOUR_PROJECT_NAME>
-
-# Install dependencies
-npm i
-
-# Start development server
-npm run dev
-```
 
 ### Environment Variables
 The project automatically configures the following via Lovable Cloud:
@@ -201,18 +168,6 @@ All tables are protected with Row-Level Security (RLS) policies ensuring users c
 - Agents can use tools (calculator, web search, data analysis)
 - Orchestrator coordinates multi-agent workflows
 - Feedback loops improve agent performance over time
-
-## 📦 Installation & Setup
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/b6587642-912e-4a3b-80d0-9abc83b00034) and click on Share -> Publish.
-
-Simply open [Lovable](https://lovable.dev/projects/b6587642-912e-4a3b-80d0-9abc83b00034) and click Share → Publish.
-
-### Custom Domain
-Connect a custom domain via Project > Settings > Domains.  
-[Learn more about custom domains](https://docs.lovable.dev/features/custom-domain#custom-domain)
 
 ## 📚 Resources
 
